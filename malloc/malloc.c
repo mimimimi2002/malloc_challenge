@@ -25,11 +25,16 @@ void munmap_to_system(void *ptr, size_t size);
 // Struct definitions
 //
 
+// metaの構造体の定義
 typedef struct my_metadata_t {
   size_t size;
   struct my_metadata_t *next;
 } my_metadata_t;
 
+// The global information of the simple malloc.
+//   *  |free_head| points to the first free slot.
+//   *  |dummy| is a dummy free slot (only used to make the free list
+//      implementation simpler).
 typedef struct my_heap_t {
   my_metadata_t *free_head;
   my_metadata_t dummy;
@@ -44,6 +49,7 @@ my_heap_t my_heap;
 // Helper functions (feel free to add/remove/edit!)
 //
 
+// 新しいメモリを前に持ってきている
 void my_add_to_free_list(my_metadata_t *metadata) {
   assert(!metadata->next);
   metadata->next = my_heap.free_head;
@@ -79,10 +85,48 @@ void *my_malloc(size_t size) {
   my_metadata_t *prev = NULL;
   // First-fit: Find the first free slot the object fits.
   // TODO: Update this logic to Best-fit!
-  while (metadata && metadata->size < size) {
-    prev = metadata;
-    metadata = metadata->next;
-  }
+  // while (metadata && metadata->size < size) {
+  //   prev = metadata;
+  //   metadata = metadata->next;
+  // }
+
+  // best fit
+  // my_metadata_t *best_fit_metadata = NULL;
+  // my_metadata_t *best_fit_prev = NULL;
+  // int min_size = 1 << 30;
+  // while (metadata) {
+  //   if (metadata->size >= size && metadata->size < min_size) {
+  //       min_size = metadata->size;
+  //       best_fit_metadata = metadata;
+  //       best_fit_prev = prev;
+  //   }
+  //   prev = metadata;
+  //   metadata = metadata->next;
+  // }
+
+  // prev = best_fit_prev;
+  // metadata = best_fit_metadata;
+
+  // worst fit
+  // my_metadata_t *worst_fit_metadata = NULL;
+  // my_metadata_t *worst_fit_prev = NULL;
+  // int max_size = 0;
+  // while (metadata) {
+  //   if (metadata->size >= size && metadata->size > max_size) {
+  //       max_size = metadata->size;
+  //       worst_fit_metadata = metadata;
+  //       worst_fit_prev = prev;
+  //   }
+  //   prev = metadata;
+  //   metadata = metadata->next;
+  // }
+
+  // prev = worst_fit_prev;
+  // metadata = worst_fit_metadata;
+
+  // free list bin
+
+
   // now, metadata points to the first free slot
   // and prev is the previous entry.
 

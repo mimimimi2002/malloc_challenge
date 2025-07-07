@@ -17,7 +17,12 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 
+// sizeは「OSからもらいたい領域の大きさ」OSはメモリ領域を確保して、その開始アドレスを返す
 void *mmap_from_system(size_t size);
+
+// ptrは「OSに返したい領域の開始アドレス」
+// sizeは「OSに返したい領域の大きさ」
+// ptr番地からsizeバイト分の領域をOSに返却する
 void munmap_to_system(void *ptr, size_t size);
 
 // Each object or free slot has metadata just prior to it:
@@ -35,6 +40,8 @@ void munmap_to_system(void *ptr, size_t size);
 //      the size of the metadata.
 //   *  The free slots are linked with a singly linked list (we call this a
 //      free list). |next| points to the next free slot.
+
+// metaの構造体の定義
 typedef struct simple_metadata_t {
   size_t size;
   struct simple_metadata_t *next;
