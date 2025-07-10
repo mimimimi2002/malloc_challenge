@@ -72,10 +72,8 @@ void best_fit (int size, my_metadata_t* metadata, my_metadata_t** metadata_p, my
 }
 
 // 新しいメモリを前に持ってきている
-// metadataに入ってるサイズによってa_binかb_binに加えるか変わってくるよね
 void my_add_to_free_list(my_metadata_t *metadata) {
   assert(!metadata->next);
-  // サイズが1000より小さかったら、a_binに加えるべきだよね
   int index = metadata->size / SIZE_BOUNDARY;
   if (index >= 4) {
     index = 3;
@@ -118,6 +116,7 @@ void find_fit_metadata(int size, my_metadata_t **prev_p, my_metadata_t **metadat
     index = 3;
   }
 
+  // 4のbinのうち最初、自分がいるbinのindexを調査した後、なければ自分より大きいものを見る
   while (index < 4) {
 
     prev = NULL;
@@ -125,7 +124,6 @@ void find_fit_metadata(int size, my_metadata_t **prev_p, my_metadata_t **metadat
 
     best_fit(size, metadata, &metadata, &prev);
 
-    // もしa_binにいいものがあったらそのmetadataを返す、もしなかったら仕方なくb_binから探す
     if (metadata) {
       *metadata_p = metadata;
       *prev_p = prev;
