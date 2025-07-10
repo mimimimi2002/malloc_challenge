@@ -50,6 +50,27 @@ my_heap_t bins[14];
 // Helper functions (feel free to add/remove/edit!)
 //
 
+// best fit
+void best_fit (int size, my_metadata_t* metadata, my_metadata_t** metadata_p, my_metadata_t** prev_p) {
+  my_metadata_t *best_fit_metadata = NULL;
+  my_metadata_t *best_fit_prev = NULL;
+
+  my_metadata_t * prev = NULL;
+  int min_size = 1 << 30;
+  while (metadata) {
+    if (metadata->size >= size && metadata->size < min_size) {
+        min_size = metadata->size;
+        best_fit_metadata = metadata;
+        best_fit_prev = prev;
+    }
+    prev = metadata;
+    metadata = metadata->next;
+  }
+
+  *prev_p = best_fit_prev;
+  *metadata_p = best_fit_metadata;
+}
+
 int get_index(int size) {
   if (size < 1000) {
     return size / 100;
@@ -105,10 +126,7 @@ void find_fit_metadata(int size, my_metadata_t **prev_p, my_metadata_t **metadat
     prev = NULL;
     metadata = bins[index].free_head;
 
-    while (metadata && size > metadata->size) {
-      prev = metadata;
-      metadata = metadata->next;
-    }
+    best_fit(size, metadata, &metadata, &prev);
 
     // もしa_binにいいものがあったらそのmetadataを返す、もしなかったら仕方なくb_binから探す
     if (metadata) {
